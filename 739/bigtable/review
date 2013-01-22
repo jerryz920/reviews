@@ -1,0 +1,19 @@
+
+Title: Bigtable: A distributed storage system for structured data
+Reviewer: Yan Zhai
+
+1. Summary
+This paper talks about the Google's storage system Bigtable. To use this table, clients can use the row and column to index the data cell. A row can be accessed transactionally, which greatly simplifies the usage of this table. Also, timestamps are used to maintain multiple versions of the data. To effectively operate on rows, the tables are divided into tablets. These tablets are placed on a set of metadata servers with hierarchy address space. A master will be used on assigning the tablet and managing the metadata.
+
+2. Things I like
+Interesting enough that Bigtable continues the design flavor of using one single point master. This actually makes the design looked quite simple. Also, the data model can be used in a quite flexible way. The customized data layout in each cell provides clients with great power of doing their stuffs. Lastly, the master recovery process looks interesting. Without any version reconciliation, it just scans through the metadata and tablets servers. Although this could be slow, it is cleaner than using complex protocols.
+
+3. Questions I want to ask:
+Is the workload pattern still similar to that of GFS? I see the experiment performance of write drops significantly with # of server scaling.
+Also, what is the consistency type for Bigtable? It looks like strong consistency, but seems it can have multiple versions, and that really sounds strange for strong consistency.
+
+4. Questions I answered
+How many tablet server is assigned to handle one tablet in BigTable?
+Just one tablet server at a time.
+Does the above design hurt system availability? Briefly explain your answer.
+I think not. The availability is depend on underlying GFS, and also the efficiency of the chubby lock. If the master can discover the lose of tablet server soon, then it can quickly reassign the tablets to different servers. The tablet server itself just performs as a cache server of GFS.

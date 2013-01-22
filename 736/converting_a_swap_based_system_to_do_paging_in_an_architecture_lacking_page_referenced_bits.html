@@ -1,0 +1,38 @@
+
+
+
+<ol>
+<li> <b>Summary </b> </li>
+This paper introduces how to change the UNIX's swapping system to page based on VAX architecture, where no page reference bit is available. It proposed a clock algorithm, several empirical studies, and tried to model the free memory pool's behavior.
+<p>
+<li> <b>Problems</b> </li>
+1.) How to implement page replacement on architecture without page referenced bit. <BR>
+2.) What differences there are between a swap-based system and a page-based system. <BR>
+<p>
+<li> <b>Contributions </b> </li>
+1.) systematically studied the behavior of traditional swap based UNIX and the new goal.<BR>
+- global vs local working set.
+- fork (introduces vfork) <br>
+- paging traffic (sets a threshold for swapping out processes, and proposes a new swapping strategy) <br>
+- I/O capacity (enlarges the page size) <br>
+- Visiting pattern (uses prefetch to sequential pattern, and provides a system call to switch to random pattern) <br>
+2.) proposed a clock paging algorithm to replace page without missing referenced bit. The referenced bit is simulated by first time visit page fault.<br>
+<p>
+<li> <b>Flaws </b> </li>
+1.) vfork brings performance gain, but also difficulties in use.
+- file manipulation before exec can be troublesome. It's not safe to closes some file descriptors any more since it operates on parent's fd table. <br>
+- variables in registers can be changed independently(registers should be saved on context switch), but variables in memory can not. This makes things not portable even across same compiler with different compilation flag. <br>
+2.) Clock algorithm's accuracy rely on memory size. It might not scale as the memory size scales. This means, on a same platform, having a double sized memory may even make things worse. <br>
+<p>
+
+<li> <b>Extra Question: what kinds of workloads will do poorly in this version of Unix, and why? </b> </li>
+I think programs with high temporal locality but no spatial locality can suffer
+from the design, like FFT. First, it's obvious that pre-paging strategy does not
+work because there is no spatial locality, and the cost to pre-paging will be
+wasted; Second, when the pre-paging is disabled, the clock algorithm is also turned
+off (in right top of page 84), and this can harm to the temporal locality. The correct
+way might be to leave the simulation on, just turning off the prefetching, or
+gradually increase the amount of pre-paging.
+
+</ol>
+

@@ -1,0 +1,40 @@
+Title: Paxos Made Simple
+Reviewer: Yan Zhai
+
+1. Summary
+This is the paper about consensus. The consensus would be quite difficult a
+problem with multiple servers involved. To achieve this goal, paxos asks each
+of the proposal server to use <proposal_number, value> pair to describe its
+proposal. If a proposal has been accepted, then any new proposal with higher
+proposal number should use the same value. This is ensured by making only
+one proposal server send proposal. To propose, the proposing servers have
+to prepare according to the current proposing status, only when it gets
+respond by majority of the acceptors, it can propose, and before the proposal
+gets accepted, it can be abandoned due to higher proposal number occurs.
+
+2. Things I learned
+This algorithm seems to get widely used in industrial. When failures are rare,
+the performance to reach consensus would be quite good due to the linear number
+of messages send between the leading proposal server and learner. Although it's
+quite difficult in competing for proposal, it ensures the safety property, and
+gives time to elect a new leader to make progress.
+
+3. Things I feel confused
+Is this true? Once an acceptor accepts a proposal, it won't accept any more proposal
+with higher proposing number but different value?
+
+Also, it mentions that servers can consensus on "nop" operations (section 3), will
+this cause some trouble to clients? Since the following commands may rely on the
+replaced command to be correct.
+
+4. Questions I answer:
+Does the consensus algorithm presented in the paper guarantee liveness?
+This can be ensured if there is a live algorithm for leader election. But seems
+we can not ensure the liveness of leader election, so I think the liveness is
+not ensured in this algorithm.
+
+What types of failures can be tolerated by the Paxos algorithm?
+I think it can tolerate the fail-stop style failures, but it can not tolerant
+byzantine failure.
+
+

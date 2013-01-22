@@ -1,0 +1,23 @@
+<ol>
+  <li> <b>Summary </b> </li>
+  This paper presents a distributed file system design. The system contains two part: client side daemon and server side service. Files are partitioned to different servers, but not replicated. The major idea is to cache data on client side. They first propose a prototype, and evaluate it for problems. Then they revise the raw design to avoid client-server operations as long as it's possible, and also tries many other way to reduce the server's load. The revised version runs better than production system NFS in performance.  <p>
+  <li> <b>Problems</b> </li>
+  The major problem they concern is: in a distributed environment, how to reduce the latency to access a file and reduce the workload on server so that it can scale. <br>
+  The detailed sub problems will be: <br>
+  1.) how to maintain cache consistency or validate <br>
+  2.) how to avoid the path look up on server<br> 
+  3.) what service model to use for client request. <p>
+  <li> <b>Contributions </b> </li>
+  1.) This file system is an early attempt on distributed file system. The major contribution is that it propose a possible local cache management method. Using the callback method, it can provide the user with consistent view of file data, and also avoid the unnecessary checking for outdated cache. <br>
+  2.) The discussion on how to serve the client request and reduce server CPU load is meaningful. It noticed that sharing can be critical to design high performance server. This is also the case even in today's server process design. What they are doing is similar to so called IO-multiplexing, which is used widely in main stream webservers and file servers.
+  <p>
+  <li> <b>Flaws </b> </li>
+  1.) It does not have data replication. So it's not resilient to errors. Even fail stop errors will cause it not working correctly: Network can be down so client may operate on out of date cache; Server (Vice) can be down so that files it serves are not available.<br>
+  2.) If I understand correctly, the files should be entirely cached to serve read/write access. But client may not use every byte, so it may cause great waste. <br>
+  3.) A potential DoS risk: callback mechanism requires the server to remember the client. This may require persistent storage or long lived connection. So when malicious clients modified their Venus code, and they can consume the server's resource by establishing many callbacks. Further, callback will only work in flat network, especially in LAN. So in current days the cross area distribution (like data center) can not rely on this.
+  <p>
+  <li> <b>Extra question </b> </li>
+  AFS tries to provide interfaces almost compatible with 4.2BSD semantic. The key point here is for the client daemon to know, when its file cache is invalid so that it would contact the server for new data. One simplification here is they don't provide concurrent control (this is similar to 4.2BSD), so it is enough for them to use server callback mechanism to notify the invalid cache entry. In this way, as long as there is no network or server failure, AFS would ensure file it reads is same to read on local BSD file system.
+  <p>
+</ol>
+

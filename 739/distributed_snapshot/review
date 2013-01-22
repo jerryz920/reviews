@@ -1,0 +1,52 @@
+
+1. Summary
+This paper aims to solve a generalized stability detection problem.
+To reach this goal, it proposed the approach of using snapshots, and proved the
+correctness of using this snapshot approach. (I don't know if soundness would be
+a better term to cover the meaning). In their approach, they use a special
+marker to make snapshot aware of the message boundary so that the snapshotted
+states would be consistent with computation.
+
+2. Things I like
+Authors present a fairly simple but interesting algorithm to snapshot the
+distributed systems. Even without capturing the exact states happened inside
+the computation, the property can still retain in the intermediate events. I
+was impressed by the proof part. Actually in this algorithm authors separately
+processed the states of the processes and of the channels. This allows one to
+switch the orders an event of a pre-recorded and a post-recorded event. This
+reminds me of the Lamport clock. Moreover, the model they proposed are not
+just synchronized model, so it's more generalized.
+
+3. Some minor flaw:
+Should the definition of pre-recorded events be refined as "the event happens
+together when process records its state"? The event e1 falls into this
+category, but the definition actually says "event after the recording".
+
+4. Question I would like to ask:
+  4.1 What happens if failures of process are considered? Is it important to consider
+failures for this problem?
+  
+  4.2 In last few lines of section 3.1, it says "Process p sends a special message,
+  called a marker, after the nth message it sends along c". Does the "nth message"
+  have some special meaning with respect to the system size or it is translated to
+  "some message" equally?
+
+5. Question I answered:
+ 5.1 What type of properties are stable?
+   given predicate y, if y holds for a state S in computation D, then y holds for
+   all later states S' reachable from S in D.
+
+ 5.2 Suppose a process in a distributed system initiates the
+ global-state-detection algorithm described in the paper. Can we guarantee that
+ every process will record its state accordingly? If the answer is yes, what
+ are your assumptions?
+   It says some process can initiate the snapshot algorithm. We can partition
+   the process graph to a sets of strongly connected components, each process
+   will record its state if and only if within each components there is at
+   least one such initial process begins to send marker. But one problem is:
+   the links or processes can actually fail, so I think the paper does not make
+   clear one thing: how to select the initial processes so that all processes
+   will eventually record their states. Static configuration might not solve
+   this so that I think there should be dynamic consensus among all the
+   processes. But this makes things quite complex.
+

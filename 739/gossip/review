@@ -1,0 +1,19 @@
+Title: A Gossip-Style Failure Detection Service
+Reviewer: Yan Zhai
+
+1. Summary
+This paper describes about a simple random algorithm to detect failure. Using proper threshold, the failure detection time/accuracy can be controlled. The paper also considers the case of WAN, and catastrophic scenario, then optimizations based on subnet partition and broadcasts are used correspondingly
+
+2. Things I like
+The algorithm is really simple, and can be implemented easily. It is quite interesting with only simple gossip can we quickly let most processes know about the status. The way how they model the gossip worth learning.
+
+3. Question I would like to ask
+Will clock skew among the system cause problem to this detection algorithm?
+
+4. Questions I would like to answer
+4.1) In the basic protocol, does a server A continue to broadcast information about a server B after server A considers server B to be faulty?
+  Yes. It's still on its list, and the information carried within gossip should help other process mark B as down.
+4.2) What is the advantage and potential disadvantage of using multi-level gossiping instead of the basic protocol?
+  The good part is that it can save bandwidth. The bad part is that information exchanged at inter-domain level would be rare and thus require a longer run to make the detection accurate.
+
+

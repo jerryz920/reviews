@@ -1,0 +1,19 @@
+
+Title: Dynamo: Amazon's Highly Available Key-value Store
+Reviewer: Yan Zhai
+
+1. Summary
+This paper talks about the Amazon's key-value storage system. The design of this system seems more like a mixed techniques of past: consistent hash for load balance and scalability, vector clock for temporal order, quorum read-write for consistency, gossip-based membership broadcasting and failure detection. They are also disclosing many of the details in designing this system, like token-partition, client-driven/server-driven, which can be helpful for future reference.
+
+2. Things I like
+Something new in this system is the concept of business logic conciliation, which greatly simplifies the design of conciliation in traditional system. Although this increases the burden of programmer, it actually greatly reduces the complexity of system design and improves the scalability. Another interesting point is use of Merkle tree to perform anti-entropy. Hash based method can quickly determine the branch where it can have inconsistency.
+
+3. Question I feel curious
+Using Merkle tree is something interesting, but can the hash values have collision? For higher layer it could depend on full comparison of its children, but what if this happens on the any parent of the leaves nodes? To ensure the inconsistency is actually found out, don't they need to post every keys?
+
+4. Question I answered
+What level of data consistency is achieved in Dynamo?
+It's eventual consistency I think. Before update actually reaches all the replica, read operations can read outdated data.
+
+How does Dynamo discover inconsistency among replicas?
+The Merkle tree is used. Each leaf is hash of a key's value, and each internal node is hash value of its children. Using this method it can compare quickly if things are consistent, and by transferring only the Merkle tree, data on the network is greatly reduced. But I am not sure if hash value collision can be a problem.

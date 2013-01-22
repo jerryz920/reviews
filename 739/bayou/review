@@ -1,0 +1,20 @@
+
+Title: Flexible Update Propagation for Weakly Consistent Replication
+Review: Yan Zhai
+
+1. Summary:
+Bayou is a protocol that controls the update between between weak consistent replica. The paper describes the protocol step by step from the simplest form, and gradually add "write stability", "log truncating", and "log rolling back". The algorithm is quite straightforward. Using this protocol, the replicas can be created and updated in a light weight manner. Also, the replica can be updated through different transport media, and it is quite novel.
+
+2. Things I think not proper
+When maintaining the stability of the write, this protocol uses a single major replica to maintain the commit of writes. I think this will cause single point failure, and before the major replica is recovered, all the writes will not be committed. Also, the time when the major server receives the write will affect the size of the write log, as well as the amount of data to transfer through the network(or other media).
+
+3. Question I would like to ask
+Will applications write to different replicas at same time? If so, how to address the conflict between replicas?
+
+4. Questions I answered:
+ 4.1 What is the prefix property? What is the benefit of satisfying prefix property?
+ Prefix property means that once a message is seen at a receiver side, then all the messages, with smaller accept-stamp and from same source, are hold in this receiver. This property can make optimization to the reconcile process such that in sender S, only messages with accept stamp larger than R.V(S), where R.V(S) means the largest accept stamp of S on receiver R.
+
+ 4.2 Why does it require ordered message delivery in the transport layer to satisfy the prefix property?
+ If the transport order is violated, and the messages with smaller accept stamp may arrive the receiver later than those with larger stamp. Then the receiver may assume they have already applied these writes, and drop them implicitly and causing errors. Also, the write behavior may not be reordered due to data dependencies.
+

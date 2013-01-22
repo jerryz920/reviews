@@ -1,0 +1,19 @@
+Title: MapReduce: Simplified Data Processing on Large Clusters
+Reviewer: Yan Zhai
+
+1. Summary
+This paper talks about a popular parallel programming model. Using this model, programmers can write sequential program, but have power of parallel processing transparently. Also, The implementation framework provides underlying fault tolerance. In Google's implementation, files are the major form of data transfer. Writing local files and read remotely help to pass the intermediate data.
+
+2. Things I like
+This mode is quite straightforward. The programming is now much more simpler than that in traditional environment, where programmers have to handle parallel, fault tolerance and communication themselves. Scalability may be a concern; however, at least with map reduce we have the ability to process the large data which requires clusters to participate.
+
+3. Questions I ask
+Are there known any cases that map reduce can not solve efficiently? I mean hard to program using map reduce.
+
+4. Questions I answer
+What is the functionality of a "master" in MapReduce implementation?
+The master is in charge of the control flow inside MapReduce, including assigning the tasks to map and reduce worker, detecting the worker failures and reassign works.
+
+Briefly explain how failures of a completed map task and a completed reduce task are handled, respectively.
+The completed map writes data in their local file system, so that its failure can lead to inaccessible of their result. The master would clear the state of the task and reassign it to another map worker. The reduce worker would write output to GFS. When it finishes, it will atomically rename the output file. So if a task completes, it will show up in the GFS, there is no need to re-execute it. 
+

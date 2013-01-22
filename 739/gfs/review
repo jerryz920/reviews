@@ -1,0 +1,17 @@
+Title: the Google File System
+Reviewer: Yan Zhai
+
+1. Summary
+this paper describes the design of the Google File System, which has special features of biasing read to write, and also have bias on append. A master is used to maintain the metadata of the files. During data operation, replicas will have a primary one to ensure the consistency of all other secondary replicas.
+
+2. Things I like
+The system is designed to satisfied the application requirement. I think this is the trend that system should serve more to the application requirement rather than being general. The workload feature of Google applications make it possible to have regular write implemented slow, and this actually reduces the difficulty in designing the consistency model.
+
+3. Question I want to ask
+I don't understand in the atomic appending, why a record append could fail at any replica? If it can fail and retry, is this operation still "atomic"
+
+4. Questions I answered
+What did GFS do to prevent its master from becoming a performance bottleneck?
+  master just needs to interact with each client once to assign the chunk location. Later the client could cache the information to directly communicate with the certain chunk server.
+How does GFS handle a master failure?
+  When a master fails, it can restart quickly, and if the master machine fails, another master can be started using the replicated operation log. DNS will be used to handle the master relocation. Also, there are some shadow masters that can be accessed for read only usage.

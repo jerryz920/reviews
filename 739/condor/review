@@ -1,0 +1,24 @@
+
+Title: Distributed Computing in Practice: The Condor Experience
+Reviewer: Yan Zhai
+
+1. Summary
+This paper describes UW-Madison's distributed computing project, Condor. This is a successful design for general purpose distributed computing, which has been deployed and widely used all over the world. Inside Condor, there are several key components:
+  1.) MatchMaker, the central manager within a resource pool. It will coordinate the resources and the user's job.
+  2.) Agent, the user's proxy to submit jobs. User would provide description using ClassAds to describe their resource requirement.
+  3.) Resources, basically means the proper computing, I/O resources to sustain the user jobs.
+  As Condor evolves, there are more components integrated into the framework. For example, the shadow component is used to resolve the resources user required at run time, thus making it more flexible. A sandbox is used to provide trust computing environment. Condor also provide many useful features like check-point and resuming.
+  Currently in Condor, there could be several universes to support different types of workload, including PVM, MPI, and Java, etc.
+
+2. Things I like
+This is really a huge design with many brilliant ideas. One that I like most is used to achieve cross resource pool management, user could submit condor itself as a job, and then use launched matcher to make its own decision. Other methods like gateway flocking or variants are also introduced, but they are not as clean as this one, since there would be a lot of modification to the original one. The only thing I would be worried about is the performance. I think this mechanism can cause an additional layer of indirection, but details are not clear, and no evaluation about this is shown.
+
+3. Question I want to ask
+The shadow component looks amazingly powerful, which can resolve all the user requirement at runtime. However, I am wondering how to achieve this. For example, when a user process looks for a file named "A", then how does shadow distinguishes between two version of "A" at different places, i.e. one in remote file system, another from public internet?
+
+4. Questions I answered
+Briefly explain how Condor-G helps a user to use remote batch systems.
+The user first submits the jobs and descriptions to the agent. Then agent would advertise the job to Matchmaker. The Matchmaker would decide the resources, which has advertised themselves before to Matchmaker, to run for this job. Then the jobs are dispatched to the correct resources and begin execution. During execution, shadow will help resolving the dependencies and sandbox will provide safe execution environment.
+
+Briefly explain what is `planning' and what is `scheduling' in Condor.
+I think Planing means the process of determining the types and quantity of resources to use for jobs, and scheduling means when jobs are to run, how to coordinate them on these allocated resources. 

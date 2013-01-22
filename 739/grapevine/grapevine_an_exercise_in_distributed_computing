@@ -1,0 +1,34 @@
+Title: Grapevine: An Exercise in Distributed Computing 
+Reviewer: Yan Zhai
+
+1. Summary:
+        this paper introduces an early distributed system Grapevine, with its background, design rationale, framework, use cases, algorithms, and some implementation details.
+
+2. Problems in this paper and solutions:
+        Grapevine aims to provide users with reliable services, making it just look like a huge centralized server. The main purpose of designing Grapevine is for mail services.
+        To meet the requirement, this paper focuses on addressing following issues in practice:
+        1.) Naming System
+        this includes naming scheme (e.g. two-level hierarchy name space, well known names for registry servers and messaging servers, indirect names for groups), and look up protocols from scratch.
+        2.) Reliability
+        This introduces how to partition and replicate the data to maintain availability and to survive from catastrophic events.
+        The message buffering and delivering algorithms also try to avoid single point failure, with multiple inbox sites available.
+        3.) Consistency
+        The highly replicated data should be updated consistently to avoid errors. One measurement taken by Grapevine is to use timestamps.  However, for other issues, human level negotiations and communications are taken for solutions.
+        Changes are also problems to the whole system. Grapevine leaves adding server/Registry to human administrations. Deleting is processed in straight forward way by restricting further modifications.
+        4.) Performance
+        Use of cache and hints to avoid extra name look up procedures.
+        5.) Access Control
+        Use of authentication on password, and some prototype access control list.
+
+3. Things I like:
+        It's a prototype of early days distributed systems. From it I nearly saw a small scale copy of current day Internet. The Registry servers perform the roles of DNS, and the message servers are exactly the servers used today. This paper also states many fundamental puzzles in building a distributed system, from the reliability, consistency, and performance aspects. Although it does have many scaling problems as said in [1], Grapevine is still a good reference for designing future systems.
+
+4. Things I question about:
+        One thing I don't quite like is that registry servers are highly involved in the process of maintaining the inbox cache. I believe proper modularity is not enforced in such scenario, since registry server should only "provide the locations of names" rather than "tell its clients (message servers here)  to do something". The whole things could be designed in an on-demand flushing style.
+
+5. Extra question: Give an example of a Grapevine design that improves the system availability
+        A simple example: replication of the GV registry on all registry servers. This makes it possible to provide where to locate inbox     
+sites even one or more registry servers die.
+
+Reference:
+[1] Experience with Grapevine: The growth of a distributed system. Michael D. Schroeder, Andrew Birrell, Roger M. Neednam. ACM Transactions on Computer Systems, Feb 1984.

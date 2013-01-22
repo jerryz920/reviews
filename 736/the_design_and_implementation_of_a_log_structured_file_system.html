@@ -1,0 +1,31 @@
+<ol>
+  <li> <b>Summary </b> </li>
+  This paper describes a different file system design comparing to the Unix file system. Instead of statically arranging the metadata and permit in place update, log structured file system will buffer the write and always write sequentially. Data blocks 'overwrite' the old ones by updating the pointers in I-node. In log structured file system, it uses proper sized segment to ensure fully utilizing the bandwidth during sequential write and amortizing the seek time. Several issues including addressing the scattered I-node, locating proper segment to write new data, as well as crash recovery are discussed.
+  <p>
+  <li> <b>Problems</b> </li>
+  The major problem is: when file cache becomes larger, read file operations can have good hit rate, so FFS style optimization is not quite beneficial. And the UFS style organization of data can cause write, especially small write to be quite cost. So the authors designed a file system that can read equally fast as FFS, but writes much more efficiently.<br>
+  The idea is trying to buffer data and sequentially write large segments all the time. This will lead to several design problems:<br>
+  1.) I-node is also written for data block updates, so no static way to compute the I-node location. There should be a way to locate I-node.<br>
+  2.) Writing data require a clean segment to carry on. But as time grows, there will be fewer and fewer available segments. Most are fragmented by live data. So there should be a method to clean segments for writing purpose.<br>
+  3.) How to recover from crash with minimum data lost?<br>
+  <p>
+  <li> <b>Contributions </b> </li>
+  Major contributions include:<br>
+  1.) the root of a new file system family. The design provides prototype answers to above questions on how to design such a sequential write based file system. Their solutions include:<br>
+    a.) I-node map and check point area for I-node tracking<br>
+    b.) segment summary block and segment usage table for cleaning. Specifically, they identified the inefficiency of using greedy cleaner.<br>
+    c.) Checkpoint based recovery. Don't need scan whole disk. Also support roll forward to get back data with best effort.<br>
+  2.) Not for 1990s, but it is good for flash devices, where in place update is not supported, and large writes are appreciated.
+  <p>
+  <li> <b>Flaws </b> </li>
+  1.) The assumption of this file system is that read can hit most of the time. If this is not the case (for both memory and I/O intensive workload), then collecting the live information or data age can lead to significant overhead since the summary block and usage table should be read out first.<br>
+  2.) Orders is still important for maintaining consistency. But in some environment, like for example virtualized environment backed with conflicting host file system, and some cheating devices ignoring the flush instructions, it may be troublesome[1].
+  <p>
+  <li> <b>Extra question </b> </li>
+  For FFS, to recover from the crash, whole disks should be scanned to rebuild the free block map, and recalculate the I-node reference count to ensure consistency. It will be quite time consuming.<br>
+  For LogFS, the meta data would be updated together, and there are also checkpoints. So we can recover consistency at least by recovering to checkpointed state. Moreover, using information in the logs, some written data can be recovered just by scanning the segment.
+  <p>
+  <li> <b>References: </b> </li>
+  [1] Consistency Without Ordering. Vijay Chidambaram, Tushar Sharma, Andrea C. Arpaci-Dusseau, Remzi H. Arpaci-Dusseau Proceedings of the 10th Conference on File and Storage Technologies (FAST '12) San Jose, CA, Feb 2012.
+</ol>
+

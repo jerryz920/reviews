@@ -1,0 +1,21 @@
+
+Title: Coda: A Highly Available File System for a Distributed Workstation Environment
+Reviewer: Yan Zhai
+
+1. Summary
+Coda is a distributed file system that tries to add reliablity to the previous AFS file system.In this file system, it employs server replication mechanism to survive during network and server failure. One thing worth highlighting is that Coda allows offline operation as long as the files are in the cache. But this also adding the possiblibity of conflict later during recovering the consistency.
+
+2. What I don't like
+In this paper it lacks the mechanism to support server side coordination. It relies on client to tell the lost of callback. Actually, I think using quorum based mechanism at server side would be more reasonable since the client might not be trustful.
+
+3. Question I want to ask
+I don't understand in replica management, part C about update opertion: why servers should perform a two-phase update after a successful check? And here which CVV to use is decided by the client?
+
+4. Question I answered
+Briefly describe in which scenarios a Coda client would fail to open a file (Do not use formula in your answer).
+First, the files are not in cache; During the past configured time period t, there is one or more lost of callback.
+
+Briefly explain why Coda has better availability than AFS.
+The basic reason is the replications used in Coda. In previous AFS, only one replica is responsible for certain file, but in Coda, there are multiple replications. Moreover, supporting offline operation with cache gives a chance to tolerant network failure. Although this might increase the chance of conflict update, the operations can at least proceed rather than to hang there.
+
+

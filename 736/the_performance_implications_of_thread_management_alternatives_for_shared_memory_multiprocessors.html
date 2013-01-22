@@ -1,0 +1,24 @@
+<ol>
+  <b> Title: The Performance Implications of Thread Management Alternatives for Shared-Memory Multiprocessors </b>
+  <b> Author: Thomas E. Anderson, Edward D. Lazowska, Henry M. Levy </b>
+
+  <li> <b>Summary </b> </li>
+  This paper talks about the thread management on the shared memory multiprocessors. In this paper, authors show that even with only slightly changes, the thread management designs can have quite different raw cost.<br>
+  The basic conflict in thread management is whether to use per-cpu data structure or centralize the management. The previous method can reduce or even remove lock contention among different threads, but with the cost of load imbalance. Authors quantitatively measured and analyzed the performance of these methods, giving good hints for future work.<br>
+  In addition, authors adapt the ethernet back off algorithm on lock contention, and argue that it could significantly increase the processing rate.
+  <p>
+  <li> <b>Problems</b> </li>
+  The major problem this paper tries to discuss is the thread management on the multi processor platform. These platforms are usually equipped with many processors, cache coherent shared memory. The cache coherence will make the spinlock contention a serious problem when processor number increases, since the cost of thread primitives will increase sharply and limit the scalability of fine-grained parallelism. The fact leads authors to discuss effective methods to manage thread, and improve the spin lock design.
+  <p>
+  <li> <b>Contributions </b> </li>
+  The contributions include three aspects: <br>
+  1.) measured results and discussions about how five different styles of thread management methods are used. This can be good reference for future study. Also, I am quite surprise to see that how bad central ready queue can behave with the number of CPU number increases. Moreover, the discussion of local ready queue and local free list is interesting. I think this change can make the N-1 lock contention to pair-wise contention on thread scheduling/migration/allocation. This can give better chance in optimization.<br>
+  2.) a back-off based algorithm on spin lock design. This idea is quite cool. My understanding for the spinlock is that when spinning, cache line that it spins on will have to be invalidated all the time. Rather than bring this cost, we'd choose to back off. So this may not impact the latency too much while reduce cache invalidation broadcast. I also learned some other ways to think about spinlocks. (Contribution to me only).<br>
+  3.) A low level model for bus contention-modeling. Contention is quite hard to depict due to its highly randomness. This provides a good example.<br>
+  <p>
+  <li> <b>Flaws </b> </li>
+  The major problem of this paper is two-folded: possibly out-of-date assumptions and no work load specific study.<br>
+  1.) Both processors and memory are changing. I am not quite sure if the current cpu-memory interface is still similar, like Intel used QPI to replace the FSB. Another fact is widely used ccNUMA. Basically I doubt the trend could be similar, but the randomness of lock contention may make things surprise, and new experiments on modern hardware are required. <br>
+  2.) It's not efficient to use just spinlocks in thread management. Alternatively, there have been several other locks proposed and implemented: read/write lock, sequential lock, and RCU lock. I am especially interested in how RCU locks are more and more incorporated into the multi processor and multi core architectures, and how they can be used to implement the 5 methods in this paper or may even bring new possibilities. The paper, if placed at today, could illustrate this with specific workload.<br>
+</ol>
+

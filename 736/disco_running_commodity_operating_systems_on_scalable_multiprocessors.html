@@ -1,0 +1,60 @@
+
+
+
+<ol>
+<li> <b>Summary </b> </li>
+Disco is a virtual machine monitor. By using this intermediate layer it tries
+to make better use of multiprocessor hardware, with little changes to the
+commodity OS. The major focus of Disco is the correctness and the performance.
+<li> <b>Problems</b> </li>
+1.) The major problem is how to make application scalable on old OS. <br>
+2.) The problems within the solution could be divided into two categories: <br>
+&nbsp;2.1) basic functionality, i.e. virtual cpu management; two layer
+indirection of guest virtual memory; I/O device virtualization; necessary
+modification to guest OS.<br>
+&nbsp;2.2) improving the performance, i.e. providing ccNUMA aware allocation
+transparently; maximize the sharing and minimize data copy using mapping and
+COW;
+<li> <b>Contributions </b> </li>
+Virtual machines usually mean strictly enforced protection boundary and
+compatibility to old OS. But in Disco, it is used to extend the OS
+transparently, and I think this is quite innovative.
+<BR>Moreover, from the design of Disco, I found authors report many details that
+help improve the virtualization technology in later days, including
+virtualizing the privileged instructions, providing hardware shadow page tables
+(This term is mentioned in [1] later, but Disco's implementation in fact uses
+this concept), and the programmable IOMMU.
+<BR>Also, the experiences of how to modify OS to run better on virtualized
+environment may inspire the use of so-called paravirtualization[1]. The
+hypercall interface(corresponds monitor call here) , split device drivers model
+(based on monitor call interface) may origin from this paper (Maybe earlier
+ones, not sure).
+<li> <b>Flaws </b> </li>
+1.) Flush TLB on context switch is brute force. When the system utilization
+goes high, this can introduce great penalty. TLB is actually tagged, but they
+choose not to virtualize the tag. Comparing with other complex optimizations,
+this is a flaw.<br>
+2.) Break the modularity when comes to sharing. It's not correct to expose
+the mbuf inside network module to file mapping, which strictly couples
+the logic. At the time Disco is designed, I don't think memory copy will be
+a huge trouble comparing to the slow disk and network. Proper copy is
+acceptable and make design more clean.<br>
+3.) Some experiments are not properly designed. For example, PMake is used
+to evaluate the benefit of sharing by launching multiple instances of PMake
+compiling multiple copies of the project. But does this make sense to real use
+of PMake? Spawn multiple processes on one project should make sense, but it
+actually has no chance in file sharing since each source file would be only
+read for once, and each object file, although accessed multiple times,
+is not read only.
+<li> <b>Extra Question: how should the scheduling and virtual memory policies
+  for a VMM differ from a standard operating system? </b> </li>
+1.) For scheduling, VMM should typically set larger time slice for time
+sharing, in order to reduce the OS switching, and give OS the chance to
+better schedule processes.
+2.) For virtual memory, VMM should not use on-demand allocation for OS. OS
+will go through the memory at least once to zero out pages for processes,
+so on-demand allocation instead leads to frequent trap into VMM.
+<li> <b>Reference</b> </li>
+[1] Paul Barham, et al. Xen and the Art of Virtualization.
+</ol>
+

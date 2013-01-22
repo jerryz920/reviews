@@ -1,0 +1,40 @@
+
+
+Title: Web caching with consistent hashing
+Reviewer: Yan Zhai
+
+1. Summary
+This paper uses the consistent hash method to design the web server caching
+system. The consistent hash, if used properly, can achieve good load balance,
+and also can tolerant well as the caching nodes come and go.
+
+2. Things I like
+The idea is quite elegant based on the property of consistent hashing. It's
+quite simple but really powerful, and directly lead to later design of the P2P
+network and all kinds of distributed hash table. The web caching itself also
+matches quite well with the property of consistent hashing. Actually, the easy
+changing of topology can be a big problem in designing robust and balanced
+look up protocol, and consistent hashing can handle this quite gracefully.
+
+3. Question I would like to ask
+It mentions consistent hashing can be implemented in a binary tree, but how? I don't
+see the direct connection between a circle and a binary tree. Then who keeps the
+tree information? Will the nodes inside the circle know about each other?
+
+4. Question to answer:
+  4.1 What is the problem of using a standard hashing function to map URLs to caches?
+  when one mapping server is done, the whole system need to rebuild the hash table
+  in order to maintain the correctness. But even behave like this, load balancing
+  properties will be ruined since some mathematical tricks will fail to work.
+
+  4.2 The LARD paper mentions that good load balance may sometimes cause low
+  cache hit rate. Please explain the reason.
+  This especially points to the round robin method. It just places the working
+  set of the whole web to every single machine, this is of course bad with the
+  service scales.
+
+
+
+
+
+

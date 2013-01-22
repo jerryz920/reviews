@@ -1,0 +1,64 @@
+
+
+<ol>
+<li> <b>Summary </b> </li>
+Opal is a single address space operating system, which eliminates the
+abstraction of strictly enforced virtual address space. This paper focuses on
+the design and implementation of global shared address space and the runtime
+environment provided to users.
+<p>
+<li> <b>Problems</b> </li>
+The problems in this paper mainly consist of:
+<BR>1.) How to make sharing easier and more flexible? E.g. share the pointers
+and file descriptors.
+<BR>2.) How to design a single address space without losing protection?
+<BR>3.) When given a function module or say user program, how to make it able
+to run properly inside this system? The code modules should be linked and
+relocated so that it can fit into the correct memory address.
+<p>
+<li> <b>Contributions </b> </li>
+The major contribution in this paper I think is to invoke the notice of using
+single address. The idea is quite novel since in such way the sharing and
+cooperation will be quite convenient, e.g. to share an object, it is enough to
+just pass the pointer to the other side, thus avoiding doing data copy, and
+also save the effort to serialize the object. Meanwhile, protection domains are
+still enforced by segment based protection mechanism. 
+Additionly, the single address space can help refining design patterns, e.g.
+the mediator pattern used to improve performance of Boeing's CAD tool. Using
+the shared address space, the mediator can avoid doing copy things, and improve
+the performance. Another example would be quite obvious: 'Singleton' object for
+the system wide use can be implemented now gracefully by checking the fixed
+virtual address. But in previous system this is not an apparent truth.
+<p>
+<li> <b>Flaws </b> </li>
+<BR>The first thing is the fragmentation problem. This is the common problem
+for the segmentation based memory management. But in Opal, this is even worse.
+The fact is, when a module not longer exists, its place might not be reclaimed,
+but instead left as a hole there. Next time a new module linked in can
+manipulate that. However, the new module might not fit exactly into the address
+range, and leaving external fragments. I doubt malicious users, if not
+explicitly restricted, may have chance to make DoS attack, by creating many
+holes inside the address space.
+<BR>The second thing is linking. Only when the module comes to the system,
+it can know how get relocated, by modifying its instruction addressing and
+resolving external symbols. Again, this process is not easy. One reason is
+the existence of indirect jump. For example, when the compiler translates a
+switch-case, it might make it a jump table. Then the problem comes: All the
+addresses inside the table must be modified in order to jump to the correct
+place, but how do the Opal knows the size of this jump table without special
+hint?
+<p>
+<li> <b>Extra Question: how does the security of a system change if you have
+a single address space?</b> </li>
+The biggest change is the assumption changes. In this model, the cross domain
+reference is assumed to happen, while in previous address space model, it is
+assumed not to happen implicitly.
+Moreover, staying one address space gives the attacker more information about
+the targets, i.e. on previous system, it is not easy for one to communicate with
+another task, but on a single address space system, this may be found out by
+probing the exported interfaces: probing can fail, but it is a possible
+approach. Once a hacker finds out some way to interact with the target, then
+he can start to look for the back doors or weakness, and try to compromise the
+target. So the chance to get compromised increases in single address space.
+</ol>
+

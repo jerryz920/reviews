@@ -1,0 +1,39 @@
+
+Title: Weighted Voting For Replicated Data
+Reviewer: Yan Zhai
+
+1. Summary
+This paper talks about how to control the replicas accessing during transaction
+execution, to meet consistency/performance requirements. The idea is to
+maintain a set of representatives with different weight for each file, and
+during a read/write operation, only when the vote from representatives exceed a
+predefined number, the operation can go on. The proper control on collecting
+quorum can then ensure that read/write are performed on the current version of
+replica rather than obsoleted ones.
+
+2. Things I like
+The idea here is quite interesting. By ensuring at least w replicas
+update-to-date, and the restriction r + w > total number of replicas, we
+naturally ensure that each read quorum, if collected for read, contain at least
+one most recent version replica, and thus strong consistency or serial
+consistency is achieved. Also, administrators are able to adjust the r and w
+value to reflect the current requirement on reliability and performance.
+
+3. Question I want to ask
+This paper describes how to read/write replicas within a transaction. But there
+can be different levels of isolation for database transactions. Using this
+model, is it true that transactions have to be scheduled sequentially?
+
+4. Question I answered:
+ 4.1 Does a system that satisfies ''monotonic reads'' consistency always
+ satisfy ''consistent prefix'' consistency?
+ I don't think so. Monotonic reads just ensure a read result will be monotonic,
+ and the write order can be changed as long as it eventually gets consistent.
+ But consistent prefix means the read result was consistent in some past point
+ according to the write order.
+ 4.2 Does a system that satisfies ''consistent prefix'' consistency always
+ satisfy ''monotonic reads'' consistency?
+ I am not sure about this. I doubt under consistent prefix requirement, two
+ read from a newer version replica and an older version replica can ruin the 
+ requirement of monotonic read. But from the definition I don't know if I
+ correctly understand the definition.

@@ -1,0 +1,40 @@
+
+
+Title: Finding Latent Performance Bugs in Systems Implementation
+Reviewer: Yan Zhai
+
+1. Summary
+This paper talks about how to find out one kind of performance bug in
+distributed system, under the assumption of event-driven data model. The
+motivation is quite correct since performance bugs are much harder to confirm
+than the functional bugs, and it's platform dependent. The idea in this paper
+is more like auto-tuning to sample the hot spots automatically based on
+historical data. All work is based on simulation.
+
+2. Things I don't like
+I don't like this paper very much. Their motivation is quite good, but what
+they do is not as good. The only thing that can praise for is that it may not
+require modify the source code.  The performance bugs are troubles, since they
+may show up all the time, and look consistent. This means you can not simply
+dig them out by statistics. What is worse are the congestion and platform
+dependent issues. It's hard to tell how the code can contribute to the
+performance variance: maybe it's a bug on i7-950, but it can vanish on Xeon
+X5670. The method in this paper may not identify the cases since it's too
+abstract.
+
+3. Questions I want to ask.
+One further thing the paper does not address is the components failure related
+degradation.  What I am curious is do we have methods in dealing with failure
+related functional bugs?
+
+4. Questions I answered:
+Briefly explain the difference between the "nesting algorithm" and the "convolution algorithm";
+They have different assumptions on traces they operate. The first algorithm
+infers the casual order on RPC communications, which have a call and a return.
+The later operates on free messages, for example A->B will not necessarily
+imply B->A later.
+
+Briefly explain the difference between "realTime" and "duration" in the Simulator algorithm presented in the "Latent Performance Bugs" paper.
+realTime is the simulated duration, and duration variable itself is the
+distribution of sampled duration of a certain event.
+

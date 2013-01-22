@@ -1,0 +1,37 @@
+
+Title: Time, Clocks, and the Ordering of Events in a Distributed System
+Reviewer: Yan Zhai
+
+1. Summary
+ A classic paper talks about event order and clocks. It first mentions
+ the logical clock, then gives out an algorithm to cope with total ordering.
+ At last it shows something about a mystery physical clock, which I don't
+ quite understand.
+
+2. Things I like
+ This is the fundamental for the distributed systems. Due to the fact
+ synchronized time is not possible in physics, there must be some way to
+ determine the orders of the events. In this paper, what it states have
+ been widely accepted, like the logical clock and partial orders. Things
+ are also quite interesting for authors to mention the physical clock.
+ But it in fact reveals the uncertainty of the distributed system, since
+ there can be arbitrary failures during the system is running, thus 
+ make total ordering impossible. Proof is difficult for me, so I skipped
+ the appendix.
+
+3. Question to ask
+ What kind of systems use Lamport Clock or its variance? 
+
+4. Question to answer
+ 4.1 In a distributed system, if event A and event B are both concurrent with
+ event C, can we guarantee that event A is concurrent with event B?
+ No. If the process where C resides never communicates with A and B residing
+ processes, then any order for A and B is possible.
+
+ 4.2 Suppose we use the logical clock defined by Lamport. If two events from
+ two processes have exactly the same logical time, can we guarantee that these
+ two events are concurrent?
+ Yes. Due to the clock condition, if a->b or b->a, then C(a) and C(b) will also
+ have the similar order relationship.
+
+

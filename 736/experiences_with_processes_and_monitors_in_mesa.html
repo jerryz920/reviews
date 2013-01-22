@@ -1,0 +1,29 @@
+
+
+<ol>
+<li> <b>Summary </b> </li>
+This paper talks about the programming language Mesa. For Mesa, it is used not only for application programming, but also used inside operating systems like Pilot, or concurrent environment. To effectively support these use case, authors stated their rationales in designing Mesa's facilities, including process, monitors, and condition variables. They also shared their experiences in actual using Mesa for system programming and concurrent programming.
+<p>
+<li> <b>Problems</b> </li>
+This paper describes only partial design of Mesa. It covered several aspects: <br>
+&nbsp;1.) Program structures design, and process operations. <br>
+&nbsp;2.) Monitor module design <br>
+&nbsp;3.) Condition variables <br>
+&nbsp;4.) Scheduling considerations
+<p>
+<li> <b>Contributions </b> </li>
+The major contribution of this paper is the detailed design of monitor and condition variables.<br>
+1.) It provides solution to perform WAIT inside a monitor. Because WAIT itself will release the lease to use the monitor, thus it must restore the invariants in a correct way. Authors also points out how to avoid the two-layer waiting problems.<br>
+2.) It concretes the condition variable's semantic, and gives freedom to the scheduler to choose the appropriate process to run. This design also naturally adapts to the alternatives scenarios like broadcasting and timeout on the condition variables.
+<p>
+<li> <b>Flaws </b> </li>
+There are some flaws in Mesa design: <br>
+1.) Use exception is a controversial thing. To throw an exception in a monitor, Mesa should carefully restore the states within the corresponding block. But when some block level does not explicitly capture the exception, then it may fail to release the monitors it hold and eventually come to dead lock.  Moreover, nested exception could be even more tricky that requires programmer to keep conscience on what could happen inside the block.<br>
+2.) Condition variable use for device driver is interesting. Generally it tries to avoid the race condition or loss of signal, but I think the solution here to use binary semaphore is not good enough. The reason is the device may want faster processing to avoid consuming all their buffers. Thus to avoid the synchronization overhead, data processing may be moved to driver's execution context. However, this means the possibility to compete for critical sections, rather than simple producer-consumer model, e.g. TCP processing would locate an end point structure, while the kernel code may be updating the look up table, and this is apparently not suitable for binary semaphore. Instead, a spinlock may be much easier to program.
+<p>
+<li> <b>Extra Question</b> </li>
+Using the conditional critical region is not suitable for long waiting. The block of code would be executed until the flag comes true, and would waste CPU time.  The condition variable, instead can go to sleep. But it is not good for latency sensitive environment, since sleep entity need rescheduling.
+<p>
+</ol>
+
+

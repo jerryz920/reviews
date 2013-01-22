@@ -1,0 +1,21 @@
+
+Title: The LOCUS Distributed Operating Systems
+Reviewer: Yan Zhai
+
+1. Summary
+This paper talks about the distributed operating system LOCUS. The design of LOCUS is quite complex, including a distributed file system, remote process execution facilities, recovery facilities, and also reconfiguration construct. These designs also maintain backward compatibility to traditional UNIX interface, and would be transparent to users.
+
+2. Things I don't quite like
+I think make all the things transparent can ease programming, however, at the cost of performance and flexibility. In a distributed environment, the design would be much more complex if the system wants to cover all the details to users, like the remote fork. This can be error-prone and hard to maintain. From performance point, it can be good enough for systems residing on the local network, but when it comes to more distributed environment, I am not sure whether this design gonna make things fast enough.
+
+3. Question I would like to ask
+I am curious if it is Unix-compatible, then how do they handle the special files. These files may only appear for certain hardware and driver. In another word, what kind of hardware will the system expose to the users?
+
+4. Questions I answered
+Why should the open operation go through CSS?
+A central controller would make things easier, since it can synchronize the requests later come in, and provide a strong consistency interface, i.e. make things update to date and coordinate the file commit in transaction like way.
+
+Briefly explain the difference between a local-machine fork() and a remote fork().
+A local fork would simply copy the content of the parent process and then execute from the fork point. It would be easy to maintain the share semantic on the bias of shared kernel data structure. For a remote fork, first thing to consider is how to select a remote site for execution. This is done by load balancing consideration. Another thing for remote fork is that all the information it requires should be send to the remote execution site to make things compatible.
+
+

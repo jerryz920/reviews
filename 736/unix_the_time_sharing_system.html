@@ -1,0 +1,107 @@
+
+
+<ol>
+<li> <b>Summary </b> </li>
+This paper describes the UNIX operating system. It's a multi-user, time sharing
+and interactive operating systems designed for PDP-11/40 and 11/45 computers.
+Actually this system has been ported to a variety of platforms.
+
+<p>
+In this paper, the author mainly focuses on topics of:
+<BR>1.) file system design
+<BR>2.) process management
+<BR>3.) external utilities including shell and other sub-systems.
+
+<p>
+I think two of the most important things authors introduce are the design of
+UNIX file system, which has deeply impacted the evolution of the modern file
+systems, and the UNIX style shell, which greatly reduces the efforts of the
+programmer to create effective and elegant programs.
+</p>
+
+<li> <b>Problems</b> </li>
+The authors throw out several problems they believe to be important:
+<BR> 1.) how to provide users with a file systems.
+<BR> 2.) how to manage the spontaneously existed processes in UNIX, including 
+spawning, execution, and synchronization issues.
+<BR> 3.) how to allow users communicate with the operating systems.
+</p>
+
+ <li> <b>Contributions </b> </li>
+ I believe some parts of design should have appeared in previous generation
+ operating systems, like the file system, the process management. For example,
+ in MULTICS[1], I think there has been a directory-style segment descriptor for
+ memory management, which looks exactly like the file system hierarchy of UNIX.
+ Moreover, spawning process by copying has also been mentioned in [2].
+ 
+<p>
+ However, the contributions of UNIX is not dimmed comparing to previous
+ efforts.  First of all, the design of unified File and I/O device interfaces
+ is brilliant. This actually evolves to today's virtual file system, and
+ standardized the interfaces to accessing files. Moreover, since I/O devices
+ can be treated as files, it can be admitted to the file protection mechanisms
+ as well. Moreover, it provides users a way to manage the hardware through
+ user space routines and applications, if the device driver chooses to expose
+ itself as a special file.
+
+<p>
+ Another big contribution of UNIX is the shell. The existence of pipes make
+ shell valuable for automatically processing. This means, to handle a complex
+ task, there is no need to write a huge monster program, but to decompose it
+ into several smaller tasks. Focusing implementing the small programs can make
+ things more simpler and high efficiency. At the end of implementation, pipes
+ combine all and finish the task in a beautiful manner.
+</p>
+
+<li> <b>Flaws </b> </li>
+From this paper, I think it's hard to say there are some flaws. But from
+perspective of designing an operating system, I think several important parts
+are missing. For example, the process scheduling and memory management is not
+mentioned. And there isn't a proper evaluation to tell readers about how to set
+some of the parameters, e.g. the number of i-node, which might cause
+inexperienced users confusing.
+
+<p>
+From the modern perspective, it's controversial to say some part is good or
+bad, like some people would speak high of UNIX style shell, for its simplicity
+and automatic processing, but some GUI supporters would abandon that point
+because they focus more in user-friendly interfaces; same arguments happen on
+micro-kernel vs monolithic kernel. However, one thing that comes newly to our
+sight is the scalability of UNIX or UNIX-like system on many-core platforms[3].
+As the number of processors keep growing, the cache coherence can hit the
+performance badly. This is still an on-going research topic that worths further
+exploration.
+</p>
+
+<li> <b>Extra Question: Discussion of Monolithic Kernel</b> </li>
+My understanding to Monolithic Kernel(MK for short, same as below) is told by
+how it organizes its address space. For a MK, its service modules are often
+placed in the same address space. From design perspective, the biggest merit of
+MK is its efficiency on current computers. As we know, the locality principles
+are very important to performance, and MK achieves the performance by avoiding
+unnecessary context switches, which would in turn flush the cache and TLB, and
+cause huge impact on performance, especially latency. Moreover, putting every
+thing in an address space makes it easy to implement, i.e. procedure call can
+make the deal, rather than some asynchronous features like IPC or something,
+error-prone.
+
+<p>
+Although academic opinions would consider micro kernel comes more superior over
+the MK. However, as to my opinions on UNIX like MK, I would say performance is
+critical. Performance means money in industrial. Computer science itself is not
+like some natural science, it is developing in a much faster cycle. New
+technologies that can not produce immediate wealth can not live long for sure.
+Although someone might argue that old trash could become valuable in future
+when condition is ready. But I have to say this subject is still too young to
+verify the statement. So I would prefer monolithic kernel to micro kernel, at
+least currently, for my work and my entertainments.
+</p>
+
+<li> <b>References: </b> </li>
+<BR>[1] The Multics Virtual Memory: Concepts and Design, A. Bensoussan, el, CACM, 1972
+<BR>[2] The Nucleus of a Multiprogramming System, Per Brinch Hansen, CACM, 1970
+<BR>[3] An Analysis of Linux Scalability to Many Cores. Silas Boyd-Wickizer el. OSDI, 2010
+</p>
+</ol>
+
+

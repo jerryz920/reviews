@@ -1,0 +1,28 @@
+
+
+<ol>
+<li> <b>Summary </b> </li>
+Hydra is a kernel that aims to support multiple operating systems running upon. It's built on a multi-processor platform. In this paper, authors try to describe the mechanism Hydra uses to provide protection mechanism, as well as the policy might be implemented based on this mechanism.
+<p>
+<li> <b>Problems</b> </li>
+The problems in this paper mainly consist of:
+<BR>1.) what should Hydra protect
+<BR>2.) how to protect these targets
+<BR>3.) how to separate the protect mechanisms and the policies
+<BR>4.) how to safely and conveniently extend the OS functionality
+<p>
+<li> <b>Contributions </b> </li>
+The major contribution is the concept of object based capability. This is different from previous systems that uses capability.
+Another contribution is that the capabilities of the objects can be not only used to protect, but also used to extend the functionality of OS. It's just like what happens in the object oriented programming, types can be inherited and creating new objects. In fact, Hydra itself looks quite object oriented. This makes it looks advanced in concept.
+<p>
+<li> <b>Flaws </b> </li>
+Although Hydra's mechanism looks appealing, I don't think Hydra is a practical system. The reasons come from following aspects:
+<BR>1.) over protection. Enforcing protection mechanism at procedure level is not a good choice. For performance part, the protection would force context switch in to kernel space, which adds overhead on pipeline interruption, cache pollution, and even TLB flushing. If this goes in every procedure entry, then either few fine granularity functions can be implemented, or overhead goes very high. The former would be a bad engineering practice and hurt to code reuse/share, the later reduces its industrial value.
+<BR>2.) mystery callee. We can see each procedure owns its capability which may be more privileged than its caller. I think this is weird. Usually caller should supervise the callee's behavior, but in Hydra the caller can not predict and control what callee can actually do. This I believe would cause confusion to the implementer of caller.
+<BR>3.) minor technical flaw: the Hydra uses reference count to track objects, but when system evolves, it's hard to predict whether circular structures will be heavily used. Without so called weak reference to break tie, the circular reference might make simple reference counters always positive, and resource would leak. The modern system like JVM would not use reference count to reclaim resources, but usually more complex mark and clean approaches.
+<p>
+<li> <b>Extra Question: How do capabilities enable extending the OS?</b> </li>
+In the section "Systems and Subsystems", it mentions that protection mechanism can naturally be used to extend the system functionality. This is done by passing the capabilities of the special TYPE object, which in turn would produce new TYPE class. And this class can be used to produce new objects, and serving for the extended functionalities.
+
+</ol>
+

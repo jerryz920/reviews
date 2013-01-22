@@ -1,0 +1,25 @@
+
+Title: The Byzantine Generals Problem
+Reviewer: Yan Zhai
+
+1. Summary
+This paper describes the Byzantine Generals Problem. This problem corresponds to the reliability issues in computer systems. The authors depicted several scenarios with different assumptions: oral messages only, unforgeable messages, byzantine generals in not fully connected graphs.
+
+2. Things I learned
+When we can not verify the signature for the data, then 3m+1 components should be configured to cope with m components' arbitrary failure. When data can be authenticated, then it becomes much easier to filter out the bad input. The contradiction and induction used in proof is impressive.
+
+3. Question I ask
+To meet IC1 and IC2 condition, OM(m) needs to send out n!/m! messages in total. Is this practical in real distributed systems?
+Also, on page 392, above last paragraph, it mentions about avoidance of copying message. Maybe I misunderstand the meaning, but is there any need to copy the messages (n-k-2)(n-k-3) ... (n-m-2) times? How to get this number?
+
+4. Questions I answered:
+Imagine there are 1 loyal commander, 2 traitor lieutenants, and 3 loyal lieutenants. Please provide a concrete example where OM(2) is used among these soldiers, yet the loyal lieutenants fail to all follow the commander's command. You need to briefly describe the process of OM(2) in your example.
+  Assume royal lieutenants are at index 0, 1, 2, 3, and traitors are 4, 5. 0 is commander.
+  1st round, each one receives "a" from commander
+  2st round, when 1 performs as commander in OM(1), he sends "a" to 2, 3, 4, 5, each commander will now decide which value to use as v1 for 1st round. Here v1 is defined in OM(m) algorithm.
+  	2.1 round, 2 performs as commander in OM(0) and sends "a" to 3, 4, 5
+	           4 performs as commander in OM(0) and sends "b" to 3
+	           5 performs as commander in OM(0) and sends "b" to 3
+	so 3 will use major["a","a","b","b"] as the value for v1.
+	similarly, 3 will use major["a","a","b","b"] as the value for v2, v4, v5, "a" for v3.
+	in this case, 3 can not decide to choose "a" or "b" as majority in ["a","a","b","b"], since if it will bias "a" then we just replace "a" to "b", then 3 will decide on ["a","a","b","a","a"] for OM(2), which yields "a", and conflicts with IC2.

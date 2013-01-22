@@ -1,0 +1,25 @@
+<ol>
+  <li> <b>Summary </b> </li>
+  This paper talks about a really brilliant idea, I wonder if it has been used somewhere like Windows or Solaris. It presents a novel mechanism for kernel to efficiently support user thread management. They first study why existed abstraction like process and kernel threads are not good, and then show the design of using scheduler activation to support user level thread scheduling. One thing worth noting is the compatibility to existed threading code.
+  <p>
+  <li> <b>Problems</b> </li>
+  They try to solve two-folded problem: <br>
+  1.) why and how current abstractions are not well suited to the thread program design <br>
+  2.) how to efficiently implement user level thread management. This has three sub-points <br>
+  2.1) how to deliver the thread related information to user scheduler <br>
+  2.2) CPU resource provisioning to the user threads <br>
+  2.3) how to maintain the compatibility and semantic to previous thread programs.
+  <p>
+  <li> <b>Contributions </b> </li>
+  The contribution comes from several aspects: <br>
+  1.) pointing out the inefficiency of kernel thread abstractions. <br>
+  2.) scheduler activation mechanism can allow user scheduler to act on thread events. This truly separates the user thread management from kernel: even one user thread blocks, or its CPU is taken away, the user scheduler will be notified and will have chance to schedule or just preempt another thread by invoking the kernel's interface. This also adds the possibility to solve classic problems like mutual exclusion by controlling the thread interleaving, which would be clean and light weight comparing to the heavy lock.
+  <p>
+  <li> <b>Flaws </b> </li>
+  1.) Although novel idea, the implementation of the critical section requires source code. I think rather than using this way, instrumenting the lock primitives in thread library might work better and automatically. Only thing needs noting is the ad-hoc style synchronization such as lock free algorithms.<br>
+  2.) The system call interface to manage thread is not light weight, and the cost to switch thread might be even larger than previous user thread library. So the difficulty in designing fine granularity multi-thread programs still remain. Moreover, although this mechanism is quite smart and straightforward, I wonder how many programs at that time can actually benefit from it? For computation intensive code, maybe previous kernel thread and user thread is already good enough, as shown in experimentation of N-Body when memory is 100% available.<br>
+  <p>
+  <li> <b>Extra question: user-level threads fell out of favor a while ago but are becoming popular again now. Why do you think that is the case?</b> </li>
+  The rising of multi-core and many-core platforms is the driven factor. Synchronizations on multi-core is extremely expensive because of cache coherence: N thread competing for one lock may yield N * (N-1) cache invalidation to a line. The contention can destory the scalability. Using user threads like what this paper describes, there can be a good chance to implement application specific thread scheduling, so that avoid the worst case synchronization, and can scale well. Also, the specific scheduling policy may simplify the multi-thread program design. Kernel threads can not afford these, since the interfaces have to be general enough.
+</ol>
+

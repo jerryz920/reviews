@@ -1,0 +1,22 @@
+<ol>
+  <li> <b>Summary </b> </li>
+  This paper describes a method for proportional sharing in resource management. The mechanism they employed is random lottery run, to select ticket from multiple assigned tickets.
+  <p>
+  <li> <b>Problems</b> </li>
+  1.) How to implement proportional sharing? <br>
+  2.) How to flexibly control the sharing? <br>
+  3.) How to manage diverse resources using the method? <br>
+  <p>
+  <li> <b>Contributions </b> </li>
+  1.) Implement proportional sharing using a clean method. Randomness naturally meets the proportional sharing purpose. <br>
+  2.) Flexible hierarchy resource control mechanism. In acyclic graph, resource allocation can be strictly limited to the allocated portion. But I don't know why it's acyclic graph. Tree style may be more easily understood.
+  <p>
+  <li> <b>Flaws </b> </li>
+  1.) This may not fit in real time system. Randomness is not achieved until long enough run, but for small programs, the hard deadline may already pass before that convergence. <br>
+  2.) The compensation mechanism can cause malicious process to game for more resource. If a process run fraction f in first time slice, and in the following time slice run full if get scheduled, then its expectation time to run will be at least 1.5 times larger than original expect.<br>
+  3.) True randomness is hard to generate. Using interrupt is a good way but it produces random number very slow. If lottery runs too often, it may not have enough random number if using true randomness.
+  <p>
+  <li> <b>Why is randomness needed to implement lottery scheduling?</b> </li>
+  Randomness can be used to pick up process to run. This ensures no one starve in the ready queue and improve the response time. Without randomness, fixed strategy can suffer from certain queue patterns and cause unfairness.
+  <p>
+</ol>

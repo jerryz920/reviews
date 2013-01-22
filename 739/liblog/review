@@ -1,0 +1,19 @@
+
+Title: Replay Debugging for Distributed Applications
+Reviewer: Yan Zhai
+
+1. Summary
+This paper describes about a user space replay tool for distributed, multi-thread programs. The basic idea is to instrument system library and record the order, the necessary content of user's code, then reuse them during replaying the code, without actual execute something. Also, user does not need to modify their source code, nor recompile the kernel, which provides great strength in deploying.
+
+2. Things I think not that good
+The tool deliberately considered how to make things deterministic. This is good. But there is something I don't quite agree with. The first thing is using one thread to simulate the behavior. In this way, the intra-thread execution may be deterministic; However, what about the interleaving among multiple threads? This tool only switch on libc call entry, so it may not really reflect the target interleaving.
+
+3. Question I want to ask
+I don't see how they distinguish what are annotations in TCP streams. I think that looks no different than the normal data, so how do they design the 'simple state machine'?
+
+4. Question I answered
+Briefly explain how liblog guarantees that no message is received before it has been sent during replay;
+The design uses lamport clock in sending/receiving messages so that 'happen before' relationship is remained in the trace.
+Briefly explain why liblog is not ''complete''.
+Because user library based tool may not handle non-deterministic inside the operating system. The logging code and replaying code both resides in user's address space, and this can distort the user's original memory layout, thus leading to slight different result.
+

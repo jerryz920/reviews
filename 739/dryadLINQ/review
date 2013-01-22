@@ -1,0 +1,19 @@
+
+Title: DryadLINQ: A system for general-purpose distributed data-parallel computing using a high level language.
+Reviewer: Yan Zhai
+
+1. Summary
+DryadLINQ is a framework that supports automatically parallel computing for given scenario. My understanding is the users write descriptive LINQ expressions, and DryadLINQ will translate these expressions into execution plan, then execute it on large clusters automatically. The lazy evaluation can be an important feature for this to work, which is quite similar to functional programming style.
+
+2. Things I like
+I think a strong type system is one major thing inside this model. Using .NET framework, compiler or runtime can take the burden of managing different code, like SQL, F# and imperative code, everything is just .NET object and strongly typed for checking and derivation. I don't know how to operate it right now but from Google result, it looks very powerful and simple.
+
+3. Question I have
+It seems the operations they mention like table query is usually such a small operation, then it means I should accumulate thousands of this kind of operations before I get actual result? I am not quite sure if this is the correct understanding.
+
+4. Question I answered
+Which entity in the Dryad system plays a similar role as the "master" in a MapReduce task?
+The job manager occurred in step (5) of section 2.1. It will coordinate the jobs.
+
+Briefly explain what is an execution plan graph in DryadLINQ.
+The execution plan will be a DAG, each vertex of which will be placed on a process to run. The vertex contains some subexpressions decomposed from original LINQ expressions, and their data dependencies will form the edges of the DAG. Also the necessary data would be generated for the vertex. Serialization of object can be handled automatically since .NET is a strong type system.

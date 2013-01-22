@@ -1,0 +1,26 @@
+<ol>
+  <li> <b>Summary </b> </li>
+  This paper talks about a new data race detection method. This method differs from previous work which relies on specific thread interleaving. Rather, it checks current lockset owned when accessing the shared variables. If no locks are hold during access, then it's a potential data race.
+  <p>
+  <li> <b>Problems</b> </li>
+  The big problem of this paper is how to detect the possible data race.<br>
+  Subproblems include: <br>
+  1.) how to reduce the detection overhead. By instrument only lock and proper memory address, this partially solved the problem.<br>
+  2.) how to avoid using thread interleaving but still be able to check the race.<br>
+  3.) how to reduce false alarm.
+  <p>
+  <li> <b>Contributions </b> </li>
+  1.) First time proposed a lockset based detection algorithm.<br>
+  2.) Identified several cases that this method can not handle and that worth future investigation.<br>
+  3.) Don't require program source code to report bugs. Debug information can help recover some of the program context.<br>
+  <p>
+  <li> <b>Flaws </b> </li>
+  1.) The false positive would be a big problem for this to be practical in huge systems, as described in this paper. Except from the cases in this paper, there are several other scenarios that this method can not address, including atomic operations, lock free algorithms and different lock, like RCU lock[1] in Linux kernel. I doubt some of the architecture dependent code only works on certain memory model is also tricky enough to trigger false alarm. <br>
+  2.) Performance is still huge concern. The memory instrumentation, even pruned some memory instrumentation, it can still be super slow, e.g. visit a read most shared array on the heap. Also, the lock instrumentation imposes fixed overhead. This make it not possible to used on long running production systems.<br>
+  3.) Still need to have proper input set to cover the execution paths. This is hard in practice with concrete input. Symbolic execution[2] may help, but also introduces other troubles.
+  <p>
+  <li> <b>Reference</b> </li>
+  [1] Guniguntala, Dinakar; McKenney, Paul E.; Triplett, Joshua; Walpole, Jonathan (April–June 2008). "The read-copy-update mechanism for supporting real-time applications on shared-memory multiprocessor systems with Linux". IBM Systems Journal 47 (2): 221–236. <br>
+  [2] Cristian Cadar, Daniel Dunbar, Dawson Engler. "Klee: Unassisted and Automatic Generation of High-Coverage Tests for Complex Systems Programs". Operating System Design and Implementation (OSDI), Dec, 2008
+</ol>
+

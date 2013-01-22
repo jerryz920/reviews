@@ -1,0 +1,48 @@
+
+Title: Web Search for a Planet: the Google Cluster Architecture
+Reviewer: Yan Zhai
+
+1. Summary
+This paper is an experience paper, focusing on revealing how Google set up
+their service cluster to provide reliable and high performance services.
+
+2. Inside Google.com
+1.) parallel indexing, and document sorting. Partition performs important role.
+(Actually the Map-Reduce, but not published yet) 
+2.) Replication to avoid fault and add capacity. 
+3.) More commodity PC, more consideration on Performance/Price. This is
+underscored in many aspects, power evaluation, hardware evaluation, and
+reliability evaluation and etc.
+
+3. Things impressed
+Different from a pure academic style paper, this paper does not emphasize
+innovation too much, but instead, they express more concerns over the cost
+issues. The way how Google balance the cost and the good qualities, i.e.
+the performance, the reliability, and so on, can be a good reference for
+future researchers. This is also the first time I heard of the power
+density in data center design, really interesting.
+
+4. My Questions
+Now that Google has itself shown us commodity machines can provide enterprise
+level service, then why are we still spending huge investment on high
+end hardwares? Except for some extreme scenarios like bank accounting and
+some high risk activities like missile or rocket launch, will there be
+real need of high end hardwares? This especially applies to the normal
+business and industrial companies, isn't it appealing to use commodity
+as a solution just as what Google does?
+
+5. Discussion Questions
+5.1) How is data replicated among the Web-Search index servers? What is the
+purpose of data replication?
+Indexes are divided into shards, each having a randomly chosen subset of
+documents from the full index. Each shard can have replicas. When one
+replica goes down, the system can still work. The purpose of replication is
+mainly to achieve availability here.
+
+5.2) How is data partitioned among the Web-Search document servers? What is the
+purpose of data partition?
+Documents are randomly distributed into smaller shards mentioned above. Each
+shard will be processed by a pool of servers, and load balancer will balance
+the server load. The main purpose here is for 1.) Performance, 2.) possibility
+to process big data.
+

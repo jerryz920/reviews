@@ -1,0 +1,55 @@
+
+
+
+<ol>
+<li> <b>Summary </b> </li>
+
+This paper presents a complete design of RPC and the rationale. The issues it
+mainly talks about covers service structures on both side, remote name
+discovering, and RPC semantic on failure. It also makes some trade-off like
+discarding the shared address space. Although it declares security is something,
+it does not mention much on that.
+<p>
+<li> <b>Problems</b> </li>
+
+To design a good RPC library, following problems should be addressed:
+1.) The way to access data. Marshalling/Unmarshalling, or shared memory
+2.) Where to discover RPC services? How to bind the service with the procedure name?
+3.) How to detect the RPC failure? How to enforce the semantic as local procedure?
+<p>
+<li> <b>Contributions </b> </li>
+
+1.) The name binding in this RPC design is quite novel. It's a successful case of
+using Grapevine for non-mail use. This design lives till today: just that DNS
+replaces Grapevine. Also, the late binding of names, if under secure environment,
+encourage flexible design since a client can import different interfaces for the
+same stub.
+2.) Define a clear semantic of RPC on failure. Different from local procedure,
+RPC can fail due to reasons of network or remote server. If client has delivered
+the command to the server side, and then network goes down, the client can not
+tell if it should redeliver the request. Clear semantic of "at most once" reduces
+the chance to send erroneous duplicate requests (lazy programmer can still make
+it, whatever)
+3.) Discarding the shared address space is wise. The distributed shared memory
+architecture incurs more troubles than benefits, especially on performance. The
+programmers can easily write turtle speed code.
+<p>
+<li> <b>Flaws </b> </li>
+
+1.) 32 bit identifier for call sequence number is apparently not enough.
+Malicious client can quickly consumes the available number and causes wrapping.<br>
+2.) at-most once semantic is not optimal sometimes. For remote query without
+side effect, it can employ at-least once semantic, which may reduce the latency.
+Further, this design restricts the capability of parallel processing, such that
+each process can only have one outstanding RPC request. This is used to enforce
+at-most once, true, but it's not good to cut the boundary at process level. A
+TCP port might be a better divider.
+<p>
+<li> <b>suppose you want to use RPC over the internet instead of a local network. Would the design work, or would you have to change things? What would you change?</b> </li>
+I think the logical structure fits in Internet, just like Google API.
+However, maintaining significant amount of connection states at server side is
+not a good design for Internet, where huge number of clients might come and go.
+The correct way to do this is to make things RESTful, or let client side RPCRuntime
+to provide session guarantee of "at-most-once" semantic to clients.
+</ol>
+

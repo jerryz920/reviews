@@ -1,0 +1,28 @@
+
+
+
+<ol>
+<li> <b>Summary </b> </li>
+Pilot is a system designed for single user operations. This paper focuses on exploring the unique features of single-user, single-language environment, in designing its own components.
+<p>
+<li> <b>Problems</b> </li>
+The most important problem this paper tries to clarify is: what assumptions we can make about the single user environment? The answer is security and access control is not a problem.
+<BR> Then the following problem would be: how to manipulate the assumption in designing other components, to make them flexible and high performance. This will lead to specific designs of virtual memory and file, of communication, of driver model.
+<p>
+<li> <b>Contributions </b> </li>
+The first contribution I would like to speak of is to invoke the attention of single user computer. This paper is thrown out at a time when big machines still dominate, but personal computer is about to rise. Such work is a pioneer to make the attempt.
+The technique contribution will be:
+<BR>1.) Stream based interface for device drivers. Filters are also loosely coupled so that they can be flexibly combined to provide different functionalities and reduce the burden to develop new drivers.
+<BR>2.) Isolated debugging environment. Different from current debuggers like GDB, it can isolate the changes to the program being debugged, so that we can find bugs more easily.
+<p>
+<li> <b>Flaws </b> </li>
+Many flaws, just mention two of them:
+<BR>1.) File name. UID is not human readable, hard for user to remember. Moreover, it cause problem to share files between different Pilot systems. Malicious user can create file with same uid but different content.
+<BR>2.) Space as minimum swapping unit. In most case users should not care about the detail of VM design, but in Pilot, if the users do not carefully divide the spaces, performance problem can rise when huge spaces are swapped in/out. I believe it is better to make page as single swappable unit, adding the mechanism to tune (like pre-fetch and user hint).
+<p>
+
+<li> <b>Extra Question: What are the unique properties of a single-user computer that change how an operating system operates</b> </li>
+Based on group discussion, we think two features would be unique, first is trustful environment inside one pilot system; second is the resource management can go without certain QoS restrictions, since only one user is served.
+
+</ol>
+

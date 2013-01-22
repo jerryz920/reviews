@@ -1,0 +1,53 @@
+
+
+
+<ol>
+<li> <b>Summary </b> </li>
+This paper presents the solution to transparently support the huge pages. The
+authors combined multiple strategies like reservation, promotion, demotion, and
+preemption, to optimize the performance while maintain transparency to users. They
+also support multiple page sizes.
+<p>
+<li> <b>Problems</b> </li>
+1.) Supporting huge page would require continuous physical memory, which may
+not get satisfied without reservation or relocation.<br>
+2.) Multiple page sizes can cause memory to get fragmented <br>
+3.) It's hard to tell if each base page inside a huge page is referenced,
+or dirty, causing difficulties to demotion, and I/O.
+<p>
+<li> <b>Contributions </b> </li>
+1.) An optimistic reservation mechanism to allocate memory. Combined with
+preemption and demotion, this solves the problem of how to select page size
+in previous reservation based systems. This way also provides support to
+multiple page sizes<br>
+2.) Speculative demotion is quite interesting. In this way, hot pages can
+still be promotion, while cold pages will be broken into smaller pieces,
+avoiding unnecessary wasting.
+<p>
+<li> <b>Flaws </b> </li>
+It's not necessary to provide transparent huge page for everything.  For
+example, the stack can keep growing and shrinking, but if this happens to occur
+on the boundary of a huge page, then should the allocation give it a huge page
+"speculatively" each time? Apparently not. Although the system can leave the
+page without revoking during stack shrinking, this is not the case when memory
+pressure is heavy. <br>
+Moreover, this kind of policy can conflict with some upper level memory usage
+pattern. An obvious thing is the garbage collectors. Using Java as example, the
+garbages may be left untouched in some old generation heaps, and only when
+memory usage reaches its specified upper bound will the collector run to
+reclaim these memory. In this way, it can be common that a lot of memory
+allocated from system allocator are not visited, then do we need bother
+allocating huge pages to them? Users should have freedom to control over this.
+<p>
+<li> <b>Extra Question:how would the solution change if large pages are 2 MB and 1 GB rather than the sizes they investigate? </b> </li>
+Then it will cause more penalties to huge page operations, since the ratio
+becomes 256 and 512 for consecutive page size. Thus the overhead of all their
+operations will scale 32 to 64 times. One interesting thing here is that
+only 2MB looks as a reasonable size for regular use. For 1GB page, only a few
+system applications, like VMM and database server, would use it extensively and
+get benefit. So it is reasonable to use fixed huge page size in the setting
+of this paper (incremental promotion/demotion, fragment control could be omitted),
+and meanwhile provide explicit interface to allocate 1GB pages.
+
+</ol>
+

@@ -1,0 +1,25 @@
+
+
+
+<ol>
+<li> <b>Summary </b> </li>
+This paper talks about the design of resource control mechanism. With this design, resource allocation and control can be separated from the protection unit, and thus can provide more flexibility in designing the policy to meet certain QoS requirement. The difference from previous work is that they argue not only thread should be accurately monitored, but also the files and sockets on a typical web server environment.
+<p>
+<li> <b>Problems</b> </li>
+The major problem to solve is that previous system: <br>
+1.) can not correctly charge the resource cost to threads, or <br>
+2.) can not charge the cost at a proper granularity. <br>
+They solve the problem by introducing the concept of resource container, so that they can separate the resource charge unit from protection unit.
+<p>
+<li> <b>Contributions </b> </li>
+The major contribution of this work is introducing of resource container, which defines a proper boundary for resource allocation and accounting. This model is already widely used in production system like Zone of Solaris, or cgroup of Linux. In this work, the concept of container can somewhat solve the resource charging problem in previous system, and it also encourages design of flexible resource management policies for different use cases.<br>
+One interesting thing that embody in above merits but worth highlighting is the defence against the DoS attack. I think it's not limited to just prevent from SYN flood. One scenario is for search engine of small sites: malicious guys can send many meaningless queries to make things down. But with resource container, the resources for searches can be easily restricted to allow normal navigation going well.
+<p>
+<li> <b>Flaws </b> </li>
+The container's concept is good, but it is not that easy to enforce the resource demands put on . For instance, in the web server example, the network bandwidth may only be maximized with enough disk bandwidth to fetch web pages, enough CPU time to copy data and process protocol cost, as well as enough socket buffer. But how do we set these parameters on the container? It will be hard to answer without careful analysis to the system, the application, and the workload. Even more difficult is to enforce multi-dimensional QoS.<br>
+Another flaw of this design is about container of file and socket. Each file descriptor can only be bound to one container. However, in the event driven design of web-server, it's possible that one file descriptors, e.g. the index.html, are shared for all http connections that come in first time, who should we charge this to? Moreover, sockets could be multiplexed for application level protocols, e.g. between cache servers and web servers, which should invoke more attention in policy design.<br>
+<p>
+<li> <b>Extra question: Resource containers largely work by recording the time it took to perform an operation. However, some operations hurt the performance of subsequent operations. For example, a overwriting the processor cache or flushing the TLB hurts the performance of the code running later. How could resource containers deal with this performance interference? </b> </li>
+The QoS is usually measured for a period. If this kind of hurt occurs occasionally, then just ignore it. But for frequent occurrences, one mitigation would be breaking the scheduling order or activation order. To achieve this, a temporary adjust in priority on resource container may work well. The complexity here is when to adjust, since we may not tell if it's the negative impact from last operation or it is the original behavior. A possible way is to measure the standard deviation on operation time, if it is too large, then it may worth some action.
+</ol>
+
